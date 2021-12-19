@@ -13,7 +13,7 @@ class GitIgnore:
     @classmethod
     def fromPath(cls, path: Path) -> GitIgnore:
         with open(path, "r") as fp:
-            rules = _transform_rules(fp.read())
+            rules = fp.read().splitlines()
         return cls.fromRules(rules)
 
     @classmethod
@@ -23,13 +23,3 @@ class GitIgnore:
 
     def match(self, fpath: Path | str) -> bool:
         return self.spec.match_file(fpath)
-
-
-def _transform_rules(raw: str) -> List[str]:
-    rules = []
-    for l in raw.splitlines():
-        if l and not l.startswith("#"):
-            # rule = l[1:] if l.startswith("!") else "!" + l
-            # rules.append(rule)
-            rules.append(l)
-    return rules
