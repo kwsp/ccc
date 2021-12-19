@@ -1,6 +1,5 @@
 from __future__ import annotations
 import os
-import re
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
@@ -127,8 +126,8 @@ class DirWalker:
     def __init__(self, fileListQueue: FileJobQueue):
         self.fileListQueue: FileJobQueue = fileListQueue
         self.dirJobsQueue: DirQueue = Queue()
-        self.excludes: List[re.Pattern] = [re.compile(pat) for pat in Excludes]
-        self.checkExclude = lambda path: any(pat.match(path) for pat in self.excludes)
+        self.excludes = GitIgnore.fromRules(Excludes)
+        self.checkExclude = lambda path: self.excludes.match(path)
 
     def start(self, startDir: Path):
         "Start looking for files at the given directory"
@@ -166,8 +165,12 @@ class DirWalker:
         # walk directory entries
         for dirEnt in dirEnts:
             if self.checkExclude(dirEnt.name):
+                if Config.verbose:
+                    print("Ignoring due to exclude: ", dirEnt)
                 continue
             if any(pat.match(dirEnt) for pat in ignores):
+                if Config.verbose:
+                    print("Ignoring due to gitignore: ", dirEnt)
                 continue
 
             if dirEnt.is_dir():
