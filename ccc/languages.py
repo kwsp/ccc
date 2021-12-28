@@ -1,5 +1,8 @@
 from typing import DefaultDict, List, Tuple
+from importlib.resources import files
 import json
+
+pkg = files("ccc")
 
 languageDB = {}
 ext2lang = DefaultDict(list)
@@ -8,7 +11,7 @@ shebang2lang = {}
 SHEBANG = "!#"
 
 # Load language database
-with open("languages.json") as fp:
+with (pkg / "languages.json").open() as fp:
     languageDB = json.load(fp)
 
 for lang, val in languageDB.items():
@@ -24,7 +27,7 @@ for lang, val in languageDB.items():
             shebang2lang[shebang] = lang
 
 
-def detectLanguageFromName(fname: str) -> Tuple[List[str], str]:
+def detectLanguageFromName(fname: str) -> List[str]:
     """
     Returns list of possible languages and extension
     """
@@ -32,21 +35,21 @@ def detectLanguageFromName(fname: str) -> Tuple[List[str], str]:
     if len(parts) == 1 or fname.startswith("."):  # no dots
         # check fullname
         if fname in fname2lang:
-            return fname2lang[fname], fname
+            return fname2lang[fname]
         # check shebang
-        return [SHEBANG], fname
+        return [SHEBANG]
 
     # in case fullname matches
     if fname in ext2lang:
-        return ext2lang[fname], fname
+        return ext2lang[fname]
 
     ext = parts[-1]
     if ext in ext2lang:
-        return ext2lang[ext], ext
+        return ext2lang[ext]
     # check multiple extensions
     parts = ext.split(".", 1)
     ext = parts[-1]
-    return ext2lang[ext], ext
+    return ext2lang[ext]
 
 
 def detectLanguageFromShebang(content: List[str]) -> str:
@@ -59,11 +62,12 @@ def detectLanguageFromShebang(content: List[str]) -> str:
     return ""
 
 
-def detectLanguage(fname: str, content: List[str]) -> str:
-    langs, ext = detectLanguageFromName(fname)
+def detectLanguage(langs: List[str], content: List[str]) -> str:
     if len(langs) == 1:
         if langs[0] == SHEBANG:
             return detectLanguageFromShebang(content)
         return langs[0]
+
+    # TODO: detect languages from content
 
     return ""
