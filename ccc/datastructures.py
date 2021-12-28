@@ -49,7 +49,7 @@ class FileSummary(NamedTuple):
         bytes = stat.st_size
         extension = path.suffix
         language = None
-        languages = detectLanguageFromName(path.name)
+        languages, _ = detectLanguageFromName(path.name)
 
         try:
             with open(path, "r") as fp:

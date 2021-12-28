@@ -39,9 +39,3 @@ def test_shebang():
 
     lang = detectLanguageFromShebang(["#!/bin/sh"])
     assert lang == "Shell"
-
-    lang = detectLanguage("name", ["#!/usr/bin/env python3"])
-    assert lang == "Python"
-
-    lang = detectLanguage("name", ["#!/bin/sh"])
-    assert lang == "Shell"

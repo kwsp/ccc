@@ -20,6 +20,7 @@ def test_ignore_from_file(tmp_path: Path):
     assert gitIgnore.match("a/b/c/main.pyc")
 
     assert gitIgnore.match("__pycache__/what")
+    assert gitIgnore.match("__pycache__")
 
     assert gitIgnore.match("site/what")
     assert not gitIgnore.match("what/site/what")

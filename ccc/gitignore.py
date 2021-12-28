@@ -13,11 +13,12 @@ class GitIgnore:
     @classmethod
     def fromPath(cls, path: Path) -> GitIgnore:
         with open(path, "r") as fp:
-            rules = fp.read().splitlines()
+            rules = fp.read().split("\n")
         return cls.fromRules(rules)
 
     @classmethod
     def fromRules(cls, rules: List[str]) -> GitIgnore:
+        rules = [r.removesuffix("/") for r in rules]
         spec = PathSpec.from_lines(GitWildMatchPattern, rules)
         return cls(path=None, spec=spec)
 
