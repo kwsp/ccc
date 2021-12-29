@@ -11,7 +11,7 @@ TEMPLATE = "{name:<20}{files:>10}{lines:>10}{blanks:>9}{comments:>10}{code:>10}{
 
 def formatResult(summaries: Dict[str, LanguageSummary]):
     langs = list(summaries.keys())
-    # langs.sort()
+    langs.sort(key=lambda lang: -len(summaries[lang].files))
     print(LINE)
     print(HEADING)
     print(LINE)
